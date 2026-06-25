@@ -74,4 +74,35 @@ public class SongsController : ControllerBase
         return Ok(songs);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateSong(int id, Song updatedSong)
+    {
+        var song = await _context.Songs.FindAsync(id);
+
+        if (song == null)
+            return NotFound("Song not found");
+
+        song.Title = updatedSong.Title;
+        song.Duration = updatedSong.Duration;
+        song.ArtistId = updatedSong.ArtistId;
+        song.AlbumId = updatedSong.AlbumId;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(song);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSong(int id)
+    {
+        var song = await _context.Songs.FindAsync(id);
+
+        if (song == null)
+            return NotFound("Song not found");
+
+        _context.Songs.Remove(song);
+        await _context.SaveChangesAsync();
+
+        return Ok("Deleted");
+    }
 }
