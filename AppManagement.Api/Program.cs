@@ -1,5 +1,7 @@
 using AppManagement.Application;
 using AppManagement.Infrastructure;
+using AppManagement.Infrastructure.Identity.DbContext;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,9 @@ builder.Services.AddCors(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AppManagementConnectionString")));
 
 var app = builder.Build();
 

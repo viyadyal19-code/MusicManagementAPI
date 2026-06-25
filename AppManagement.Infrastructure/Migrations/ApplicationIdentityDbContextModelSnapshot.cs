@@ -4,19 +4,16 @@ using AppManagement.Infrastructure.Identity.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AppManagement.Infrastructure.Identity.Migrations
+namespace AppManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationIdentityDbContext))]
-    [Migration("20250623104629_InitialIdentityMigration")]
-    partial class InitialIdentityMigration
+    partial class ApplicationIdentityDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,6 +21,26 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AppManagement.Infrastructure.Identity.Models.Album", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ReleaseYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Albums");
+                });
 
             modelBuilder.Entity("AppManagement.Infrastructure.Identity.Models.ApplicationUser", b =>
                 {
@@ -102,7 +119,7 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                         {
                             Id = "526033fb-d870-4f16-bdc9-74dbed29a281",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "124278c3-1a7e-4a74-8cfe-193f7288b630",
+                            ConcurrencyStamp = "f116da37-f59b-4a32-b6d3-a83695506587",
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             FirstName = "System",
@@ -110,9 +127,9 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEG5zSC0HE5gV4F+vfsu/MZA8luZUR8tWZ4qBaRxuhXNBnD5jj/eogJ0PRk15ebJm6w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFka1n0RPz6O9enQxeFk8f6VDfWoCz5+JeBZ3DqLfQlSIRCn44U4LZGMt+XllWP4xg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "92edaf1d-243e-4e2c-adc6-f7c7abfba3fc",
+                            SecurityStamp = "7b5bffc0-ac56-490c-b25a-7495b13b19cd",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
@@ -120,7 +137,7 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                         {
                             Id = "e67a49ce-0022-477e-9b16-69c705a0d99a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2fc78d0a-22c2-4b7b-a96e-dc02d940e4d1",
+                            ConcurrencyStamp = "ce2e7308-87d4-4db9-af43-45e9ea0ae75f",
                             Email = "customer01@localhost.com",
                             EmailConfirmed = true,
                             FirstName = "System",
@@ -128,12 +145,67 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "CUSTOMER01@LOCALHOST.COM",
                             NormalizedUserName = "CUSTOMER01@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELy/JSfz27vOxYaSFq75AF7QlXLSv2ribXzyg0czto42F8Y4bib7tEIEvieSn/vVJw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENsZweNjQojXy4EoXGFb2FhJXGSdYrM9u9xF2LioXldy1SANEHgswNQ75SvVGwArPQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c7e7963e-58ed-4a05-965a-a6d734d7a6d7",
+                            SecurityStamp = "f55fb557-ca2f-4b7e-8952-b325ef4ca664",
                             TwoFactorEnabled = false,
                             UserName = "customer01@localhost.com"
                         });
+                });
+
+            modelBuilder.Entity("AppManagement.Infrastructure.Identity.Models.Artist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Artists");
+                });
+
+            modelBuilder.Entity("AppManagement.Infrastructure.Identity.Models.Song", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AlbumId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ArtistId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlbumId");
+
+                    b.HasIndex("ArtistId");
+
+                    b.ToTable("Songs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -295,6 +367,23 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AppManagement.Infrastructure.Identity.Models.Song", b =>
+                {
+                    b.HasOne("AppManagement.Infrastructure.Identity.Models.Album", "Album")
+                        .WithMany("Songs")
+                        .HasForeignKey("AlbumId");
+
+                    b.HasOne("AppManagement.Infrastructure.Identity.Models.Artist", "Artist")
+                        .WithMany("Songs")
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Album");
+
+                    b.Navigation("Artist");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -344,6 +433,16 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AppManagement.Infrastructure.Identity.Models.Album", b =>
+                {
+                    b.Navigation("Songs");
+                });
+
+            modelBuilder.Entity("AppManagement.Infrastructure.Identity.Models.Artist", b =>
+                {
+                    b.Navigation("Songs");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,14 +5,43 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace AppManagement.Infrastructure.Identity.Migrations
+namespace AppManagement.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentityMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Albums",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReleaseYear = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Albums", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Artists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Artists", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -52,6 +81,33 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Songs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Duration = table.Column<int>(type: "int", nullable: false),
+                    ArtistId = table.Column<int>(type: "int", nullable: false),
+                    AlbumId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Songs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Songs_Albums_AlbumId",
+                        column: x => x.AlbumId,
+                        principalTable: "Albums",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Songs_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -174,8 +230,8 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "526033fb-d870-4f16-bdc9-74dbed29a281", 0, "124278c3-1a7e-4a74-8cfe-193f7288b630", "admin@localhost.com", true, "System", "Admin", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEG5zSC0HE5gV4F+vfsu/MZA8luZUR8tWZ4qBaRxuhXNBnD5jj/eogJ0PRk15ebJm6w==", null, false, "92edaf1d-243e-4e2c-adc6-f7c7abfba3fc", false, "admin@localhost.com" },
-                    { "e67a49ce-0022-477e-9b16-69c705a0d99a", 0, "2fc78d0a-22c2-4b7b-a96e-dc02d940e4d1", "customer01@localhost.com", true, "System", "User", false, null, "CUSTOMER01@LOCALHOST.COM", "CUSTOMER01@LOCALHOST.COM", "AQAAAAIAAYagAAAAELy/JSfz27vOxYaSFq75AF7QlXLSv2ribXzyg0czto42F8Y4bib7tEIEvieSn/vVJw==", null, false, "c7e7963e-58ed-4a05-965a-a6d734d7a6d7", false, "customer01@localhost.com" }
+                    { "526033fb-d870-4f16-bdc9-74dbed29a281", 0, "f116da37-f59b-4a32-b6d3-a83695506587", "admin@localhost.com", true, "System", "Admin", false, null, "ADMIN@LOCALHOST.COM", "ADMIN@LOCALHOST.COM", "AQAAAAIAAYagAAAAEFka1n0RPz6O9enQxeFk8f6VDfWoCz5+JeBZ3DqLfQlSIRCn44U4LZGMt+XllWP4xg==", null, false, "7b5bffc0-ac56-490c-b25a-7495b13b19cd", false, "admin@localhost.com" },
+                    { "e67a49ce-0022-477e-9b16-69c705a0d99a", 0, "ce2e7308-87d4-4db9-af43-45e9ea0ae75f", "customer01@localhost.com", true, "System", "User", false, null, "CUSTOMER01@LOCALHOST.COM", "CUSTOMER01@LOCALHOST.COM", "AQAAAAIAAYagAAAAENsZweNjQojXy4EoXGFb2FhJXGSdYrM9u9xF2LioXldy1SANEHgswNQ75SvVGwArPQ==", null, false, "f55fb557-ca2f-4b7e-8952-b325ef4ca664", false, "customer01@localhost.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -225,6 +281,16 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Songs_AlbumId",
+                table: "Songs",
+                column: "AlbumId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Songs_ArtistId",
+                table: "Songs",
+                column: "ArtistId");
         }
 
         /// <inheritdoc />
@@ -246,10 +312,19 @@ namespace AppManagement.Infrastructure.Identity.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Songs");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Albums");
+
+            migrationBuilder.DropTable(
+                name: "Artists");
         }
     }
 }
