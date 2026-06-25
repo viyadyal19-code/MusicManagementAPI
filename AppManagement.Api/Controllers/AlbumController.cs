@@ -29,4 +29,49 @@ public class AlbumController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(album);
     }
+
+    [HttpGet("{id}/songs")]
+    public async Task<IActionResult> GetSongsByAlbum(int id)
+    {
+        var songs = await _context.Songs
+            .Where(s => s.AlbumId == id)
+            .ToListAsync();
+
+        return Ok(songs);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAlbum(int id, Album updatedAlbum)
+    {
+        var album = await _context.Albums.FindAsync(id);
+
+        if (album is null)
+            return NotFound("Album not found");
+
+        album.Title = updatedAlbum.Title;
+        album.ReleaseYear = updatedAlbum.ReleaseYear;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(album);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAlbum(int id)
+    {
+        var album = await _context.Albums
+            .Include(a => a.Songs)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (album is null)
+            return NotFound("Album not found");
+
+        if (album.Songs.Any())
+            return BadRequest("Cannot delete album with existing songs");
+
+        _context.Albums.Remove(album);
+        await _context.SaveChangesAsync();
+
+        return Ok("Album deleted");
+    }
 }
