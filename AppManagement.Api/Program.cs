@@ -1,6 +1,8 @@
+using AppManagement.Api.Middleware;
 using AppManagement.Application;
 using AppManagement.Infrastructure;
 using AppManagement.Infrastructure.Identity.DbContext;
+using AppManagement.Infrastructure.Identity.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +36,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("all");
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

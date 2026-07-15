@@ -1,5 +1,7 @@
-﻿using AppManagement.Infrastructure.Identity.DbContext;
-using AppManagement.Infrastructure.Identity.Models;
+﻿using AppManagement.Application.Abstractions.Services;
+using AppManagement.Application.DTOs.Album;
+using AppManagement.Application.Model;
+using AppManagement.Infrastructure.Identity.DbContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,69 +11,38 @@ namespace AppManagement.Api.Controllers;
 [Route("api/[controller]")]
 public class AlbumController : ControllerBase
 {
-    private readonly ApplicationIdentityDbContext _context;
+    private readonly IAlbumService _albumService;
 
-    public AlbumController(ApplicationIdentityDbContext context)
+    public AlbumController(IAlbumService Albumservice)
     {
-        _context = context;
+        _albumService = Albumservice;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAlbums()
     {
-        return Ok(await _context.Albums.ToListAsync()); 
+        return Ok(await _albumService.GetAllAsync());
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddAlbum(Album album)
+    public async Task<IActionResult> Addalbum(AlbumRequest request)
     {
-        _context.Albums.Add(album);  
-        await _context.SaveChangesAsync();
+        var album = await _albumService.CreateAsync(request); ;
         return Ok(album);
     }
 
-    [HttpGet("{id}/songs")]
-    public async Task<IActionResult> GetSongsByAlbum(int id)
-    {
-        var songs = await _context.Songs
-            .Where(s => s.AlbumId == id)
-            .ToListAsync();
-
-        return Ok(songs);
-    }
-
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateAlbum(int id, Album updatedAlbum)
+    public async Task<IActionResult> Updatealbum(int id, AlbumRequest request)
     {
-        var album = await _context.Albums.FindAsync(id);
-
-        if (album is null)
-            return NotFound("Album not found");
-
-        album.Title = updatedAlbum.Title;
-        album.ReleaseYear = updatedAlbum.ReleaseYear;
-
-        await _context.SaveChangesAsync();
-
+        var album = await _albumService.UpdateAsync(id, request);
         return Ok(album);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAlbum(int id)
+    public async Task<IActionResult> Deletealbum(int id)
     {
-        var album = await _context.Albums
-            .Include(a => a.Songs)
-            .FirstOrDefaultAsync(a => a.Id == id);
-
-        if (album is null)
-            return NotFound("Album not found");
-
-        if (album.Songs.Any())
-            return BadRequest("Cannot delete album with existing songs");
-
-        _context.Albums.Remove(album);
-        await _context.SaveChangesAsync();
-
-        return Ok("Album deleted");
+        return await _albumService.DeleteAsync(id)
+         ? Ok("album deleted")
+         : BadRequest();
     }
 }

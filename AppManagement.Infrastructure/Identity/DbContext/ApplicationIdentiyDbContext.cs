@@ -1,4 +1,5 @@
-﻿using AppManagement.Infrastructure.Identity.Models;
+﻿using AppManagement.Application.Model;
+using AppManagement.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

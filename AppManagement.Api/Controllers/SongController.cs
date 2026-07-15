@@ -1,7 +1,6 @@
-﻿using AppManagement.Infrastructure.Identity.DbContext;
-using AppManagement.Infrastructure.Identity.Models;
+﻿using AppManagement.Application.Abstractions.Services;
+using AppManagement.Application.DTOs.Song;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppManagement.Api.Controllers;
 
@@ -9,100 +8,50 @@ namespace AppManagement.Api.Controllers;
 [Route("api/[controller]")]
 public class SongsController : ControllerBase
 {
-    private readonly ApplicationIdentityDbContext _context;
+    private readonly ISongService _songService;
 
-    public SongsController(ApplicationIdentityDbContext context)
+    public SongsController(ISongService SongService)
     {
-        _context = context;
+        _songService = SongService;
     }
 
-    // GET all songs
     [HttpGet]
     public async Task<IActionResult> GetSongs()
     {
-        var songs = await _context.Songs
-            .Include(s => s.Artist)
-            .Include(s => s.Album)
-            .ToListAsync();
-
-
-        return Ok(songs);
+        return Ok(await _songService.GetAllAsync());
     }
 
-    // POST new song
     [HttpPost]
-    public async Task<IActionResult> AddSong(Song song)
+    public async Task<IActionResult> AddSong(SongRequest request)
     {
-        // Check if Artist already exists
-        var artist = await _context.Artists.FindAsync(song.ArtistId);
-        if (artist == null)
-        {
-            return BadRequest("Artist not found");
-        }
-
-        // Check if Album already exists 
-        if (song.AlbumId != null)
-        {
-            var album = await _context.Albums.FindAsync(song.AlbumId);
-            if (album == null)
-            {
-                return BadRequest("Album not found");
-            }
-        }
-
-        _context.Songs.Add(song);
-        await _context.SaveChangesAsync();
-
+        var song = await _songService.CreateAsync(request);
         return Ok(song);
     }
+
 
     //Search by title OR artist
     [HttpGet("search")]
     public async Task<IActionResult> SearchSongs(string keyword)
     {
-        var songs = await _context.Songs
-            .Include(s => s.Artist)
-            .Include(s => s.Album)
-            .Where(s => 
-                s.Title.Contains(keyword) ||
-                (s.Artist != null &&
-                (s.Artist.FirstName.Contains(keyword) || 
-                s.Artist.LastName.Contains(keyword)))
-                )
-            .ToListAsync();
+        var songs = await _songService.SearchAsync(keyword);
 
         return Ok(songs);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSong(int id, Song updatedSong)
+    public async Task<IActionResult> UpdateSong(int id, SongRequest request)
     {
-        var song = await _context.Songs.FindAsync(id);
-
-        if (song == null)
-            return NotFound("Song not found");
-
-        song.Title = updatedSong.Title;
-        song.Duration = updatedSong.Duration;
-        song.ArtistId = updatedSong.ArtistId;
-        song.AlbumId = updatedSong.AlbumId;
-
-        await _context.SaveChangesAsync();
-
+        var song = await _songService.UpdateAsync(id, request);
         return Ok(song);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSong(int id)
     {
-        var song = await _context.Songs.FindAsync(id);
+        var deleted = await _songService.DeleteAsync(id);
 
-        if (song == null)
-            return NotFound("Song not found");
-
-        _context.Songs.Remove(song);
-        await _context.SaveChangesAsync();
-
-        return Ok("Deleted");
+        return deleted
+            ? Ok("Song deleted successfully")
+            : NotFound("Song not found");
     }
 }

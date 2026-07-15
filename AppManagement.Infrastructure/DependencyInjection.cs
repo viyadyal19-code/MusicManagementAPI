@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using AppManagement.Application.Abstractions.Identity;
+using AppManagement.Application.Abstractions.Repositories;
 using AppManagement.Infrastructure.Identity.DbContext;
 using AppManagement.Infrastructure.Identity.Models;
 using AppManagement.Infrastructure.Identity.Services;
 using AppManagement.Infrastructure.Identity.Settings;
+using AppManagement.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,10 @@ public static class DependencyInjection
     )
     {
         services.AddIdentityServices(configuration);
+        services.AddScoped<IArtistRepository, ArtistRepository>();
+        services.AddScoped<IAlbumRepository, AlbumRepository>();
+        services.AddScoped<ISongRepository, SongRepository>();
+
 
         return services;
     }

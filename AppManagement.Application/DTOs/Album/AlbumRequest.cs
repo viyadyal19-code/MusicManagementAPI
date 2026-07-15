@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AppManagement.Application.DTOs.Album
+{
+    public class AlbumRequest
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public int ReleaseYear { get; set; }
+    }
+}

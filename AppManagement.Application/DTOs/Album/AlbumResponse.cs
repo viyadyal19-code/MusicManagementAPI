@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json.Serialization;
 
-namespace AppManagement.Infrastructure.Identity.Models
+namespace AppManagement.Application.DTOs.Album
 {
-    public class Album
+    public class AlbumResponse
     {
-        public int Id { get; set; }   
-
+        public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
-
         public int ReleaseYear { get; set; }
-
-        [JsonIgnore]
-        public List<Song> Songs { get; set; } = new();
     }
 }
