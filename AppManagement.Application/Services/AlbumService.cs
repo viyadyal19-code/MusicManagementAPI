@@ -2,6 +2,7 @@
 using AppManagement.Application.Abstractions.Services;
 using AppManagement.Application.DTOs.Album;
 using AppManagement.Application.DTOs.Song;
+using AppManagement.Application.Exceptions;
 using AppManagement.Application.Mappers;
 using AppManagement.Application.Model;
 using System;
@@ -51,9 +52,16 @@ namespace AppManagement.Application.Services
 
         }
 
-        public Task<IEnumerable<SongResponse>> GetSongsByAlbumAsync(int id)
+        public async Task<IEnumerable<SongResponse>> GetSongsByAlbumAsync(int id)
         {
-            throw new NotImplementedException();
+            var album = await _repository.GetByIdAsync(id);
+
+            if (album is null)
+            {
+                throw new NotFoundException("Album not found");
+             }
+
+            return album.Songs.Select(s => s.MapToResponse());
         }
 
         public async Task<AlbumResponse> UpdateAsync(int id, AlbumRequest request)
@@ -62,7 +70,7 @@ namespace AppManagement.Application.Services
             var album = await _repository.GetByIdAsync(id);
 
             if (album is null)
-                throw new ArgumentException("Album not found");
+                throw new NotFoundException("Album not found");
 
             album.Title = request.Title;
             album.ReleaseYear = request.ReleaseYear;

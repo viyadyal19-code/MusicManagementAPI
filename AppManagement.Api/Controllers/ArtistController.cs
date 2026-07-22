@@ -1,12 +1,11 @@
 ﻿using AppManagement.Application.Abstractions.Services;
 using AppManagement.Application.DTOs.Artist;
-using AppManagement.Infrastructure.Identity.DbContext;
-using AppManagement.Infrastructure.Identity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppManagement.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ArtistController : ControllerBase
@@ -35,7 +34,7 @@ public class ArtistController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddArtist(ArtistRequest request)
     {
-        var artist = await _artistService.CreateAsync(request);;
+        var artist = await _artistService.CreateAsync(request); ;
         return Ok(artist);
     }
 
@@ -49,8 +48,8 @@ public class ArtistController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteArtist(int id)
     {
-       return await _artistService.DeleteAsync(id)
-        ? Ok("Artist deleted")
-        : BadRequest();
+        return await _artistService.DeleteAsync(id)
+         ? Ok("Artist deleted")
+         : BadRequest();
     }
 }

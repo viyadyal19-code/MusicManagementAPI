@@ -34,7 +34,7 @@ public sealed class AuthenticationService : IAuthenticationService
 
         if (user is null)
         {
-            throw new NotFoundException($"User with {request.Email} not found.", request.Email);
+            throw new NotFoundException($"User with {request.Email} not found.");
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);

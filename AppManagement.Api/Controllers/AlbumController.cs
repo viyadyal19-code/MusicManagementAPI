@@ -2,11 +2,13 @@
 using AppManagement.Application.DTOs.Album;
 using AppManagement.Application.Model;
 using AppManagement.Infrastructure.Identity.DbContext;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppManagement.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AlbumController : ControllerBase
@@ -30,6 +32,7 @@ public class AlbumController : ControllerBase
         var album = await _albumService.CreateAsync(request); ;
         return Ok(album);
     }
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Updatealbum(int id, AlbumRequest request)

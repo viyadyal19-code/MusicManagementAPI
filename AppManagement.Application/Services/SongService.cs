@@ -1,6 +1,7 @@
 ﻿using AppManagement.Application.Abstractions.Repositories;
 using AppManagement.Application.Abstractions.Services;
 using AppManagement.Application.DTOs.Song;
+using AppManagement.Application.Exceptions;
 using AppManagement.Application.Mappers;
 
 namespace AppManagement.Application.Services
@@ -23,14 +24,14 @@ namespace AppManagement.Application.Services
 
             if (artist == null)
             {
-                throw new Exception("Artist not found");
+                throw new NotFoundException("Artist not found");
             }
 
             var album = await _albumRepository.GetByIdAsync(request.AlbumId);
 
             if (album == null)
             {
-                throw new Exception("Album not found");
+                throw new NotFoundException("Album not found");
             }
 
             var song = request.MapToSong();
@@ -71,7 +72,7 @@ namespace AppManagement.Application.Services
 
             if (song == null)
             {
-                throw new Exception("Song not found");
+                throw new NotFoundException("Song not found");
             }
 
             song.Title = request.Title;

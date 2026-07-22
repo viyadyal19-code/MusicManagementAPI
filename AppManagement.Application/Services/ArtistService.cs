@@ -1,6 +1,7 @@
 ﻿using AppManagement.Application.Abstractions.Repositories;
 using AppManagement.Application.Abstractions.Services;
 using AppManagement.Application.DTOs.Artist;
+using AppManagement.Application.Exceptions;
 using AppManagement.Application.Mappers;
 using AppManagement.Application.Model;
 
@@ -38,7 +39,7 @@ internal class ArtistService : IArtistService
 
         if (artist is null)
         {
-            throw new ArgumentException("Artist not found");
+            throw new NotFoundException("Artist not found");
         }
 
         artist.FirstName = request.FirstName;
@@ -55,7 +56,7 @@ internal class ArtistService : IArtistService
 
         if (artist.Songs.Any())
         {
-            throw new ArgumentException("Cannot delete Artist with at least one song");
+            throw new NotFoundException("Cannot delete Artist with at least one song");
         }
 
         return await _repository.DeleteAsync(artist);

@@ -1,9 +1,11 @@
 ﻿using AppManagement.Application.Abstractions.Services;
 using AppManagement.Application.DTOs.Song;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppManagement.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class SongsController : ControllerBase
